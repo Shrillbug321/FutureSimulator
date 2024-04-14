@@ -5,11 +5,376 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FutureSimulator"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="DA_SD_ŁW" Height="1000" Width="1600">
     <!-- <Grid Name="Grid"> -->
-        
-        <Canvas Name="CellsCanvas" Width="300" Height="300">
-            
-        </Canvas>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Margin="10">
+            <StackPanel Orientation="Horizontal">
+                <GroupBox Header="Input Parameters" Margin="0,0,10,0" MaxWidth="200" Width="164">
+                    <StackPanel>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="M rows" />
+                            <TextBox x:Name="txtMRows" Margin="5,0,0,10" Grid.Column="1" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="N colls" />
+                            <TextBox x:Name="txtNColls" Margin="5,0,0,10" Grid.Column="1" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="n_of_A" />
+                            <TextBox x:Name="txtn_of_A" Margin="5,0,0,10" Grid.Column="1" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="n_of_D" />
+                            <TextBox x:Name="txtn_of_D" Margin="5,0,0,10" Grid.Column="1" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="n_of_B" />
+                            <TextBox x:Name="txtn_of_B" Margin="5,0,0,10" Grid.Column="1" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="n_of_iter" />
+                            <TextBox x:Name="txtn_of_iter" Margin="5,0,0,10" Grid.Column="1" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="n_of_exper" />
+                            <TextBox x:Name="txtn_of_exper" Margin="5,0,0,10" Grid.Column="1" />
+                        </Grid>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Init_capit IC" />
+                            <TextBox x:Name="init_capt" Margin="5,0,0,10" Grid.Column="1" />
+                        </Grid>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="Additional Options" Margin="30,0,0,0" MaxWidth="200" Width="224">
+                    <StackPanel>
+                        <CheckBox Content="Debug" Margin="5,0,0,10"/>
+                        <GroupBox Header="Read Options">
+                            <StackPanel Height="144">
+                                <CheckBox Content="Read CA_STATES"/>
+                                <CheckBox Content="Read A_PROFILE"/>
+                                <CheckBox Content="Read RAND_NUM"/>
+                                <StackPanel Margin="0,0,0,10">
+                                    <RadioButton Content="test 1" Margin="0,5,0,0"/>
+                                    <RadioButton Content="test 2"/>
+                                    <RadioButton Content="test 3"/>
+                                </StackPanel>
+
+
+                                <StackPanel>
+                                    <WrapPanel Margin="0,0,0,0">
+                                        <RadioButton GroupName="SeedOptions" Content="clock_seed"/>
+                                        <RadioButton GroupName="SeedOptions" Content="custom_seed" Margin="10,0,0,0"/>
+                                    </WrapPanel>
+                                    <WrapPanel Margin="0,5,0,0">
+                                        <TextBox x:Name="custom_seed" Width="89" Margin="81,0,0,0"/>
+                                    </WrapPanel>
+                                </StackPanel>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </GroupBox>
+
+            </StackPanel>
+            <GroupBox Header="Parameters of A">
+                <StackPanel>
+                    <GroupBox Header="IQ range">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Min:" Margin="0,0,5,0"/>
+                                <TextBox x:Name="txtMinIQ" Width="50" Margin="33,0,27,0" Grid.ColumnSpan="3"/>
+                                <TextBlock Text="Max:" Margin="66,0,-41,0" Grid.Column="2"/>
+                                <TextBox x:Name="txtMaxIQ" Width="50" Grid.Column="2" Margin="100,0,-100,0"/>
+                            </Grid>
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Health_state">
+                        <StackPanel>
+                            <GroupBox Header="p_HS" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="p_HS1:" Margin="0,0,5,0"/>
+                                    <TextBox x:Name="txt_p_HS1" Width="50"/>
+                                    <TextBlock Text="p_HS2:" Margin="10,0,5,0"/>
+                                    <TextBox x:Name="txt_p_HS2" Width="50"/>
+                                    <TextBlock Text="p_HS3:" Margin="10,0,5,0"/>
+                                    <TextBox x:Name="txt_p_HS3" Width="50"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Header="p_ill" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="p_ill1:" Margin="0,0,5,0"/>
+                                    <TextBox x:Name="txt_p_ill1" Width="50"/>
+                                    <TextBlock Text="p_ill2:" Margin="10,0,5,0"/>
+                                    <TextBox x:Name="txt_p_ill2" Width="50"/>
+                                    <TextBlock Text="p_ill3:" Margin="10,0,5,0"/>
+                                    <TextBox x:Name="txt_p_ill3" Width="50"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+                                <TextBlock Text="n_iter_susp_B:" Margin="0,0,5,0"/>
+                                <TextBox Text="1" Width="120"/>
+                            </StackPanel>
+
+                        </StackPanel>
+                    </GroupBox>
+                    <GroupBox Header="Risc_accept_level (IQ)">
+                        <StackPanel>
+                            <GroupBox Header="" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="IQ &lt; " Margin="0,0,5,0"/>
+                                    <TextBox x:Name="txt_p_iqr" Width="50"/>
+                                    <TextBlock Text="   IQ      IQ >" Margin="10,0,5,0"/>
+                                    <TextBox x:Name="txt_p_iqm" Width="50"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <StackPanel>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="  " VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <TextBlock Text="p_acc" Margin="30,0,0,0" Width="50"/>
+                                        <TextBlock Text="p_acc" Margin="15,0,0,0" Width="50"/>
+                                        <TextBlock Text="p_acc" Margin="15,0,0,0" Width="50"/>
+                                    </StackPanel>
+                                </Grid>
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="B1" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <TextBox x:Name="txt_p_b1p1" Margin="15,0,0,0" Width="50"/>
+                                        <TextBox x:Name="txt_p_b1p2" Margin="15,0,0,0" Width="50"/>
+                                        <TextBox x:Name="txt_p_b1p3" Margin="15,0,0,0" Width="50"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="B2" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <TextBox x:Name="txt_p_b2p1" Margin="15,0,0,0" Width="50"/>
+                                        <TextBox x:Name="txt_p_b2p2" Margin="15,0,0,0" Width="50"/>
+                                        <TextBox x:Name="txt_p_b2p3" Margin="15,0,0,0" Width="50"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="B3" VerticalAlignment="Center"/>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <TextBox x:Name="txt_p_b3p1" Margin="15,0,0,0" Width="50"/>
+                                        <TextBox x:Name="txt_p_b3p2" Margin="15,0,0,0" Width="50"/>
+                                        <TextBox x:Name="txt_p_b3p3" Margin="15,0,0,0" Width="50"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+
+                            <GroupBox Header="Mobility (IQ)" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="p_mob 1:" Margin="0,0,5,0"/>
+                                    <TextBox x:Name="txt_p_pmob1" Width="50"/>
+                                    <TextBlock Text="p_mob 2:" Margin="10,0,5,0"/>
+                                    <TextBox x:Name="txt_p_pmob2" Width="50"/>
+                                    <TextBlock Text="p_mob 3:" Margin="10,0,5,0"/>
+                                    <TextBox x:Name="txt_p_pmob3" Width="50"/>
+                                </StackPanel>
+                            </GroupBox>
+
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="Business type">
+                <StackPanel>
+                    <StackPanel>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="  " VerticalAlignment="Center"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Grid.ColumnSpan="3" Margin="0,0,253,0">
+                                <TextBlock Text="thr" Margin="30,0,0,0" Width="50"/>
+                                <TextBlock Text="inv a" Margin="25,0,0,0" Width="50"/>
+                                <TextBlock Text="increase of CAP" Margin="15,0,0,0" Width="83"/>
+                                <TextBlock Text="p_rics" Margin="15,0,0,0" Width="50"/>
+                                <TextBlock Text="p_avail_b" Margin="15,0,0,0" Width="50"/>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="B1" VerticalAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" Margin="13,0,11,0">
+                                <TextBox x:Name="txt_p_b1t1" Margin="15,0,0,0" Width="50"/>
+                                <TextBlock Text="of IC" Margin="2,0,0,0" Width="30"/>
+                                <TextBox x:Name="txt_p_b1t2" Margin="0,0,0,0" Width="50"/>
+                                <TextBox x:Name="txt_p_b1t3" Margin="15,0,0,0" Width="83"/>
+                                <TextBox x:Name="txt_p_b1t4" Margin="15,0,0,0" Width="50"/>
+                                <TextBox x:Name="txt_p_b1t5" Margin="15,0,0,0" Width="50"/>
+                                <TextBlock Text="of IC" Margin="2,0,0,0" Width="30"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="B2" VerticalAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" Margin="13,0,11,0">
+                                <TextBox x:Name="txt_p_b2t1" Margin="15,0,0,0" Width="50"/>
+                                <TextBlock Text="of IC" Margin="2,0,0,0" Width="30"/>
+                                <TextBox x:Name="txt_p_b2t2" Margin="0,0,0,0" Width="50"/>
+                                <TextBox x:Name="txt_p_b2t3" Margin="15,0,0,0" Width="83"/>
+                                <TextBox x:Name="txt_p_b2t4" Margin="15,0,0,0" Width="50"/>
+                                <TextBox x:Name="txt_p_b2t5" Margin="15,0,0,0" Width="50"/>
+                                <TextBlock Text="of IC" Margin="2,0,0,0" Width="30"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="B3" VerticalAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" Margin="13,0,11,0">
+                                <TextBox x:Name="txt_p_b3t1" Margin="15,0,0,0" Width="50"/>
+                                <TextBlock Text="of IC" Margin="2,0,0,0" Width="30"/>
+                                <TextBox x:Name="txt_p_b3t2" Margin="0,0,0,0" Width="50"/>
+                                <TextBox x:Name="txt_p_b3t3" Margin="15,0,0,0" Width="83"/>
+                                <TextBox x:Name="txt_p_b3t4" Margin="15,0,0,0" Width="50"/>
+                                <TextBox x:Name="txt_p_b3t5" Margin="15,0,0,0" Width="50"/>
+                                <TextBlock Text="of IC" Margin="2,0,0,0" Width="30"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="Wealth thr">
+                <StackPanel>
+                    <StackPanel>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="  " VerticalAlignment="Center"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Grid.ColumnSpan="3" Margin="0,0,253,0">
+                                <TextBlock Text="poor" Margin="20,0,0,0" Width="50"/>
+                                <TextBlock Text="fair" Margin="45,0,0,0" Width="50"/>
+                                <TextBlock Text="reach" Margin="45,0,0,0" Width="83"/>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="B1" VerticalAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" Margin="13,0,11,0">
+                                <TextBox x:Name="txt_p_poor" Margin="0,0,0,0" Width="50"/>
+                                <TextBlock Text="of IC" Margin="2,0,0,0" Width="30"/>
+                                <TextBox x:Name="txt_p_fair" Margin="15,0,0,0" Width="50"/>
+                                <TextBlock Text="of IC" Margin="2,0,0,0" Width="30"/>
+                                <TextBox x:Name="txt_p_reach" Margin="15,0,0,0" Width="50"/>
+                                <TextBlock Text="of IC" Margin="2,0,0,0" Width="30"/>
+                            </StackPanel>
+                        </Grid>
+
+
+                    </StackPanel>
+
+                </StackPanel>
+            </GroupBox>
+
+
+        </StackPanel>
+        <StackPanel Grid.Column="1">
+            <Canvas Name="CellsCanvas" Width="300" Height="300">
+
+            </Canvas>
+        </StackPanel>
+    </Grid>
+    
     <!-- </Grid> -->
 </Window>
