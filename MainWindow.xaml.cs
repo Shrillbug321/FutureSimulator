@@ -8,14 +8,14 @@ using LiveCharts;
 using LiveCharts.Wpf;
 
 namespace FutureSimulator;
-
+using static FutureSimulator.Util;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
 public partial class MainWindow
 {
-	private int rows = 6;
-	private int columns = 6;
+	private int rows;
+	private int columns;
 	private double cellWidth;
 	private double cellHeight;
 	private int[,] caStates;
@@ -24,6 +24,8 @@ public partial class MainWindow
 	public MainWindow()
 	{
 		InitializeComponent();
+		rows = TbToInt(txtMRows);
+		columns = TbToInt(txtNColls);
 		cellWidth = CellsCanvas.Width / columns;
 		cellHeight = CellsCanvas.Height / rows;
 
