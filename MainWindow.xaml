@@ -85,14 +85,14 @@
 
                     <GroupBox Header="Additional Options" Margin="30,0,0,0" MaxWidth="200" Width="224">
                         <StackPanel>
-                            <CheckBox Content="Debug" Margin="5,0,0,10" IsChecked="True" />
+                            <CheckBox Name="chb_debug" Content="Debug" Margin="5,0,0,10" IsChecked="True" />
                             <GroupBox Header="Read Options">
                                 <StackPanel Height="144">
                                     <CheckBox Content="Read CA_STATES" Checked="ReadCAStates_Checked" />
                                     <CheckBox Content="Read A_PROFILE" />
                                     <CheckBox Content="Read RAND_NUM" />
                                     <StackPanel Margin="0,0,0,10">
-                                        <RadioButton Content="test 1" Margin="0,5,0,0" IsChecked="True" />
+                                        <RadioButton Name="rb_test1" Content="test 1" Margin="0,5,0,0" IsChecked="True" />
                                         <RadioButton Content="test 2" />
                                         <RadioButton Content="test 3" />
                                     </StackPanel>
@@ -100,7 +100,7 @@
                                     <StackPanel>
                                         <WrapPanel Margin="0,0,0,0">
                                             <RadioButton GroupName="SeedOptions" Content="clock seed" IsChecked="True" />
-                                            <RadioButton GroupName="SeedOptions" Content="custom seed"
+                                            <RadioButton GroupName="SeedOptions" Content="custom seed" Name="rb_custom_seed"
                                                          Margin="10,0,0,0" />
                                         </WrapPanel>
                                         <WrapPanel Margin="0,5,0,0">
@@ -109,6 +109,7 @@
                                     </StackPanel>
                                 </StackPanel>
                             </GroupBox>
+                            <Button Click="StartButton_OnClick">Start</Button>
                         </StackPanel>
                     </GroupBox>
 
@@ -124,10 +125,10 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <TextBlock Text="Min:" Margin="0,0,5,0" />
-                                    <TextBox x:Name="txtMinIQ" Width="50" Margin="33,0,27,0" Grid.ColumnSpan="3"
+                                    <TextBox x:Name="txt_min_iq" Width="50" Margin="33,0,27,0" Grid.ColumnSpan="3"
                                              Text="70"/>
                                     <TextBlock Text="Max:" Margin="66,0,-41,0" Grid.Column="2" />
-                                    <TextBox x:Name="txtMaxIQ" Width="50" Grid.Column="2" Margin="100,0,-100,0"
+                                    <TextBox x:Name="txt_max_iq" Width="50" Grid.Column="2" Margin="100,0,-100,0"
                                              Text="140"/>
                                 </Grid>
                             </StackPanel>
@@ -137,7 +138,7 @@
                                 <GroupBox Header="p_HS" Margin="0,0,0,10">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="p_HS1:" Margin="0,0,5,0" />
-                                        <TextBox x:Name="txt_p_HS1" Width="50" Text="0.45" />
+                                        <TextBox x:Name="txt_p_HS1" Width="50" Text="0.15" />
                                         <TextBlock Text="p_HS2:" Margin="10,0,5,0" />
                                         <TextBox x:Name="txt_p_HS2" Width="50"  Text="0.60"/>
                                         <TextBlock Text="p_HS3:" Margin="10,0,5,0" />
@@ -157,11 +158,11 @@
                                 <StackPanel Orientation="Horizontal">
                                     <StackPanel Orientation="Horizontal" Margin="0,0,5,0">
                                         <TextBlock Text="n_iter_susp_B:" Margin="0,0,5,0" />
-                                        <TextBox Text="1" Width="60" />
+                                        <TextBox Name="txt_n_iter_susp_B" Text="1" Width="60" />
                                     </StackPanel>
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
                                         <TextBlock Text="D_IC_decr_range:" Margin="0,0,5,0" />
-                                        <TextBox Text="1" Width="60" />
+                                        <TextBox Name="txt_D_IC_decr_range" Text="0.1" Width="60" />
                                     </StackPanel>    
                                 </StackPanel>
                             </StackPanel>
