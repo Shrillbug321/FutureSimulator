@@ -1,4 +1,4 @@
-namespace FutureSimulator;
+namespace FutureSimulator.Agents;
 using static Global;
 public class Agent:AgentAbstract
 {
@@ -13,7 +13,7 @@ public class Agent:AgentAbstract
 
 	public Agent()
 	{
-		Iq = (int)Util.RandomGauss(Mean, IqRangeMin, IqRangeMax);
+		Iq = (int)Randomizer.Gauss(Mean, IqRangeMin, IqRangeMax);
 		
 		dynamic rand = Randomizer.Next();
 		IqState = rand <= IqStateThresholds[IqState.Stupid] ? IqState.Stupid :

@@ -1,9 +1,12 @@
-﻿using Microsoft.Win32;
+﻿using System.Globalization;
+using Microsoft.Win32;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using FutureSimulator.Agents;
+using FutureSimulator.Business;
 using LiveCharts;
 using LiveCharts.Wpf;
 
@@ -25,18 +28,23 @@ public partial class MainWindow
 	private SeriesCollection chartSeries;
 	private List<Agent> agents;
 	private List<int> occupiedCells = [];
-	private int cells;
+	private int cellsNumber;
+	private List<BusinessAbstract> businessTypes;
 
 	public MainWindow()
 	{
+		CultureInfo ci = new CultureInfo("en-GB");
+		Thread.CurrentThread.CurrentCulture = ci;
+		Thread.CurrentThread.CurrentUICulture = ci;
 		InitializeComponent();
 		caStates = InitializeCAState(caStates);
 		DrawCaStatesCanvas(caStates);
 		InitializeChart();
 		Randomizer = rb_custom_seed.IsChecked == true
-			? new Random(TbToInt(window.custom_seed))
+			? new Random(TbToInt(custom_seed))
 			: new Random();
 		window = this;
+		businessTypes = [new Business1(), new Business2(), new Business3()];
 		/*for (int i = 0; i < 100; i++)
 		{
 			new Agent();
@@ -45,11 +53,11 @@ public partial class MainWindow
 
 	private CAState[,] InitializeCAState(CAState[,] caStates)
 	{
-		rows = TbToInt(txtMRows);
-		columns = TbToInt(txtNColls);
-		cellWidth = CellsCanvas.Width / columns;
-		cellHeight = CellsCanvas.Height / rows;
-		cells = rows * columns;
+		rows = TbToInt(txt_m_rows);
+		columns = TbToInt(txt_n_colls);
+		cellWidth = cells_canvas.Width / columns;
+		cellHeight = cells_canvas.Height / rows;
+		cellsNumber = rows * columns;
 		caStates = new CAState[rows, columns];
 
 		// Fill the array with zeros
@@ -109,7 +117,7 @@ public partial class MainWindow
 
 	private void DrawCaStatesCanvas(CAState[,] caStates)
 	{
-		CellsCanvas.Children.Clear();
+		cells_canvas.Children.Clear();
 		for (int i = 0; i < rows; i++)
 		{
 			for (int j = 0; j < columns; j++)
@@ -136,7 +144,7 @@ public partial class MainWindow
 
 				Canvas.SetTop(r, j * cellHeight);
 				Canvas.SetLeft(r, i * cellWidth);
-				CellsCanvas.Children.Add(r);
+				cells_canvas.Children.Add(r);
 			}
 		}
 	}
@@ -149,26 +157,26 @@ public partial class MainWindow
 			new LineSeries
 			{
 				Title = "Poor", Values = new ChartValues<double>(),
-				Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("blue"))
+				Stroke = new SolidColorBrush(Color.FromRgb(0, 0, 255))
 			},
 			new LineSeries
 			{
 				Title = "Fair", Values = new ChartValues<double>(),
-				Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("green"))
+				Stroke = new SolidColorBrush(Color.FromRgb(0, 255, 0))
 			},
 			new LineSeries
 			{
 				Title = "Rich", Values = new ChartValues<double>(),
-				Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("red"))
+				Stroke = new SolidColorBrush(Color.FromRgb(255, 0, 0))
 			},
 			new LineSeries
 			{
 				Title = "Init Capital", Values = new ChartValues<double>(),
-				Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("black"))
+				Stroke = new SolidColorBrush(Color.FromRgb(0, 0, 0))
 			}
 		];
-		Chart.Series = chartSeries;
-		Chart.ChartLegend = new DefaultLegend();
+		chart.Series = chartSeries;
+		chart.ChartLegend = new DefaultLegend();
 
 		//Sample data
 		chartSeries[0].Values.Add(12.0);
@@ -177,71 +185,17 @@ public partial class MainWindow
 		chartSeries[3].Values.Add(TbToDouble(init_capt));
 	}
 
-	private enum CAState
-	{
-		Empty,
-		Agent,
-		Disease,
-		Business1,
-		Business2,
-		Business3
-	}
-
 	private void StartButton_OnClick(object sender, RoutedEventArgs e)
 	{
 		Randomizer = rb_custom_seed.IsChecked == true
-			? new Random(TbToInt(window.custom_seed))
+			? new Random(TbToInt(custom_seed))
 			: new Random();
 		agents = [];
+		occupiedCells = [];
 		caStates = InitializeCAState(caStates);
-		Console.WriteLine("===");
-		for (int i = 0; i < TbToInt(txtn_of_A); i++)
-		{
-			int cell = Randomizer.Next(0, cells);
-
-			while (occupiedCells.Contains(cell))
-				cell = Randomizer.Next(0, cells);
-
-			occupiedCells.Add(cell);
-
-			agents.Add(new Agent
-			{
-				Id = i, GlobalId = cell
-			});
-			IntPoint p = Convert1DPointTo2D(cell);
-			caStates[p.X, p.Y] = CAState.Agent;
-		}
-
-		for (int i = 0; i < TbToInt(txtn_of_D); i++)
-		{
-			int cell = Randomizer.Next(0, cells);
-
-			while (occupiedCells.Contains(cell))
-				cell = Randomizer.Next(0, cells);
-
-			occupiedCells.Add(cell);
-
-			IntPoint p = Convert1DPointTo2D(cell);
-			caStates[p.X, p.Y] = CAState.Disease;
-		}
-
-		for (int i = 0; i < TbToInt(txtn_of_B); i++)
-		{
-			int cell = Randomizer.Next(0, cells);
-
-			while (occupiedCells.Contains(cell))
-				cell = Randomizer.Next(0, cells);
-
-			occupiedCells.Add(cell);
-
-			IntPoint p = Convert1DPointTo2D(cell);
-
-			double rand = Randomizer.NextDouble();
-
-			caStates[p.X, p.Y] = rand <= Business.Avaibilities[0] ? CAState.Business1 :
-				rand <= Business.Avaibilities[1] ? CAState.Business2 : CAState.Business3;
-		}
-
+		GenerateCAStates(TbToInt(txtn_of_A), CAState.Agent);
+		GenerateCAStates(TbToInt(txtn_of_D), CAState.Disease);
+		GenerateCAStates(TbToInt(txtn_of_B), CAState.Business1);
 		DrawCaStatesCanvas(caStates);
 
 		RunSimulation();
@@ -255,48 +209,111 @@ public partial class MainWindow
 	{
 		for (int i = 0; i < TbToInt(txtn_of_iter); i++)
 		{
-			await Task.Delay(1000);
-			List<int> occupiedByAgents = occupiedCells[..agents.Count];
-			List<int> newOccupied = [];
+			await Task.Delay(400);
+			List<int> newOccupied = occupiedCells[..agents.Count];
 			CAState[,] newCAStates = new CAState[rows, columns];
 			newCAStates = InitializeCAState(newCAStates);
-			for (int j = 0; j < agents.Count; j++)
-			{
-				IntPoint p = Convert1DPointTo2D(occupiedByAgents[j]);
-				newCAStates[p.X, p.Y] = CAState.Agent;
-			}
+			newCAStates = RedrawAgents(caStates, newCAStates);
 
-			newOccupied.AddRange(occupiedByAgents);
 			foreach (int cell in occupiedCells[agents.Count..])
 			{
 				List<int> neighbours = GetCellNeighbourhood(cell);
-				int newCell;
-				bool changed = false;
-				do
+				int newCell=-1;
+				bool moved = false;
+				
+				//Move cell to neighbour
+				while (!moved)
 				{
 					newCell = neighbours[Randomizer.Next(0, neighbours.Count)];
 					if (newOccupied.Contains(newCell))
 						neighbours.Remove(newCell);
 					else
 					{
-						changed = true;
+						moved = true;
 						newOccupied.Add(newCell);
 					}
-				} while (neighbours.Count > 0 && !changed);
+				} 
+
+				//Move cell somewhere
+				//(IMO in this case cell should not move)
+				while (!moved)
+				{
+					newCell = Randomizer.Next(0, cellsNumber);
+					if (!newOccupied.Contains(newCell))
+					{
+						moved = true;
+						newOccupied.Add(newCell);
+					}
+				}
 
 				IntPoint p = Convert1DPointTo2D(cell);
 				IntPoint p2 = Convert1DPointTo2D(newCell);
 
-				if (changed)
-					newCAStates[p2.X, p2.Y] = caStates[p.X, p.Y];
-				else
-					newCAStates[p.X, p.Y] = caStates[p.X, p.Y];
+				newCAStates[p2.X, p2.Y] = caStates[p.X, p.Y];
 			}
 
 			occupiedCells = newOccupied;
 			caStates = newCAStates;
 			DrawCaStatesCanvas(caStates);
 		}
+	}
+
+	/// <summary>
+	/// Generate random state of CA after initialization.
+	/// </summary>
+	/// <param name="iterations">Number of cells in state</param>
+	/// <param name="state">State of cell</param>
+	private void GenerateCAStates(int iterations, CAState state)
+	{
+		for (int i = 0; i < iterations; i++)
+		{
+			int cell = Randomizer.Next(0, cellsNumber);
+
+			while (occupiedCells.Contains(cell))
+				cell = Randomizer.Next(0, cellsNumber);
+
+			occupiedCells.Add(cell);
+			IntPoint p = Convert1DPointTo2D(cell);
+			caStates[p.X, p.Y] = state;
+
+			switch (state)
+			{
+				case CAState.Agent:
+				{
+					agents.Add(new Agent
+					{
+						Id = i, GlobalId = cell
+					});
+					break;
+				}
+				case CAState.Business1 or CAState.Business2 or CAState.Business3:
+					double rand = Randomizer.NextDouble();
+					caStates[p.X, p.Y] = rand <= Business1.Availability ? CAState.Business1 :
+						rand <= Business2.Availability ? CAState.Business2 : CAState.Business3;
+					continue;
+			}
+		}
+	}
+
+	/// <summary>
+	/// Redraw agents from iteration <i>n-1</i> to iteration <i>n</i>
+	/// </summary>
+	/// <param name="oldStates">Array of states for previous iteration</param>
+	/// <param name="newStates">Array of states for current iteration</param>
+	/// <returns>Array with agents</returns>
+	private CAState[,] RedrawAgents(CAState[,] oldStates, CAState[,] newStates)
+	{
+		for (int i = 0; i < columns; i++)
+		{
+			for (int j = 0; j < rows; j++)
+			{
+				if (oldStates[i, j] == CAState.Agent)
+				{
+					newStates[i, j] = CAState.Agent;
+				}
+			}
+		}
+		return newStates;
 	}
 
 	private List<int> GetCellNeighbourhood(int point)
@@ -322,20 +339,20 @@ public partial class MainWindow
 	}
 
 	///Convert 1D point to 2D point.<br/>
-	///For example: if row=6 and columns=6 and point=10
-	/// then function return Point=(1,3)
+	///<b>Example:</b> if <i>row=6</i>, <i>columns=6</i> and <i>point=10</i>
+	/// then function return <i>Point=(1,3)</i>
 	private IntPoint Convert1DPointTo2D(int point)
 	{
 		return new IntPoint
 		{
-			X = point / columns,
-			Y = point % rows
+			X = point % rows,
+			Y = point / columns
 		};
 	}
 
 	///Convert 2D point to 1D point.<br/>
-	///For example: if row=6 and columns=6 and Point=(1,3)
-	/// then function return 10
+	///<b>Example:</b> if <i>row=6</i>, <i>columns=6</i> and <i>Point=(1,3)</i>
+	/// then function return <i>10</i>
 	private int Convert2DPointTo1D(IntPoint point)
 	{
 		return point.X * columns + point.Y + 1;
@@ -374,6 +391,45 @@ public partial class MainWindow
 		return CellPosition.Inside;
 	}
 
+	private record AgentsActivity
+	{
+		private int agentID;
+		private int agentGlobalID;
+		private bool positionChanged;
+		private double currentCapital;
+		private bool capitalIncreased;
+		private ChangeReason increaseReason;
+		private bool capitalDecreased;
+		private ChangeReason decreaseReason;
+		private bool capitalNotChange;
+		private bool diseaseSuspendBusiness;
+		private int emergencyHops;
+	}
+
+	private record BusinessesActivity
+	{
+		private int businessID;
+		private int businessGlobalID;
+		private int type;
+		private int emergencyHops;
+	}
+	private record DiseaseActivity
+	{
+		private int diseaseID;
+		private int diseaseGlobalID;
+		private int emergencyHops;
+	}
+	
+	private enum CAState
+	{
+		Empty,
+		Agent,
+		Disease,
+		Business1,
+		Business2,
+		Business3
+	}
+
 	private enum CellPosition
 	{
 		TopLeftCorner,
@@ -385,5 +441,10 @@ public partial class MainWindow
 		BottomEdge,
 		LeftEdge,
 		Inside
+	}
+
+	private enum ChangeReason
+	{
+		NoChange, AfterBusiness1, AfterBusiness2, AfterBusiness3, Disease
 	}
 }
