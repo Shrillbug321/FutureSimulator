@@ -1,7 +1,7 @@
-namespace FutureSimulator.Agents;
+namespace FutureSimulator.Cells.Agents;
 using static Util;
-using static Global;
-public abstract class AgentAbstract
+
+public abstract class AgentAbstract:Cell
 {
 	public enum HealthState
 	{
@@ -16,35 +16,30 @@ public abstract class AgentAbstract
 		Poor, Fair, Rich
 	}
 	
-	protected int IterationOnBusiness;
-	protected double DecreaseInitCapitalOnDisease;
+	public int IterationsOnBusiness;
+	public double DecreaseInitialCapitalOnDisease;
 	protected int IqRangeMin;
 	protected int IqRangeMax;
+	protected double IqMean;
 	
 	protected Dictionary<HealthState, double> HealthStateThresholds = new();
-	protected Dictionary<HealthState, double> IllnessThresholds = new();
+	protected Dictionary<HealthState, double> DiseaseThresholds = new();
 	protected Dictionary<IqState, double> IqStateThresholds = new();
-	//badziewiaste nazwy, nie pamiętam czym było p_ac
-	protected List<Dictionary<IqState, double>> BusinessAccepts = new();
+	//badziewiaste nazwy, nie pamiętam czym było p_acc
+	protected List<Dictionary<IqState, double>> BusinessesAccepts = [];
 	protected Dictionary<IqState, double> MobilityThresholds = new();
-	protected Dictionary<WealthState, double> WealthThresholds = new();
-
-	protected double Mean;
-	protected double StdDev;
-
+	public Dictionary<WealthState, double> WealthThresholds = new();
+	
 	protected AgentAbstract()
 	{
 		GetValuesFromInputs();
-		Mean = (double)(IqRangeMax + IqRangeMin) / 2;
-		Console.WriteLine(Randomizer.Gauss(Mean, IqRangeMin, IqRangeMax));
-		
-		//StdDev = 
+		IqMean = (double)(IqRangeMax + IqRangeMin) / 2;
 	}
 
 	private void GetValuesFromInputs()
 	{
-		IterationOnBusiness = TbToInt("txt_n_iter_susp_B");
-		DecreaseInitCapitalOnDisease = TbToDouble("txt_D_IC_decr_range");
+		IterationsOnBusiness = TbToInt("txt_n_iter_susp_B");
+		DecreaseInitialCapitalOnDisease = TbToDouble("txt_D_IC_decr_range");
 		IqRangeMin = TbToInt("txt_min_iq");
 		IqRangeMax = TbToInt("txt_max_iq");
 		HealthStateThresholds = new Dictionary<HealthState, double>
@@ -53,7 +48,7 @@ public abstract class AgentAbstract
 			[HealthState.Standard] = TbToDouble("txt_p_HS1")+TbToDouble("txt_p_HS2"),
 			[HealthState.Good] = TbToDouble("txt_p_HS1")+TbToDouble("txt_p_HS2")+TbToDouble("txt_p_HS3"),
 		};
-		IllnessThresholds = new Dictionary<HealthState, double>
+		DiseaseThresholds = new Dictionary<HealthState, double>
 		{
 			[HealthState.Weak] = TbToDouble("txt_p_ill1"),
 			[HealthState.Standard] = TbToDouble("txt_p_ill2"),
@@ -65,7 +60,7 @@ public abstract class AgentAbstract
 			[IqState.Standard] = TbToInt("txt_p_iqr"),
 			[IqState.Clever] = TbToInt("txt_p_iqm"),
 		};
-		BusinessAccepts =
+		BusinessesAccepts =
 		[
 			new Dictionary<IqState, double>
 			{

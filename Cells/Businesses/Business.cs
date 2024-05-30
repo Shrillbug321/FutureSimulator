@@ -1,9 +1,7 @@
-using System.Windows.Controls;
-using static FutureSimulator.Global;
 using static FutureSimulator.Util;
-namespace FutureSimulator.Business;
+namespace FutureSimulator.Cells.Businesses;
 
-public abstract class BusinessAbstract
+public abstract class Business:Cell
 {
 	public double InitCapitalThreshold;
 	public double InvestedCapital;
@@ -35,7 +33,7 @@ public abstract class BusinessAbstract
 		]}
 	};
 
-	protected BusinessAbstract()
+	protected Business()
 	{
 		InitCapitalThreshold = Values[GetType().Name][0];
 		InvestedCapital = Values[GetType().Name][1];

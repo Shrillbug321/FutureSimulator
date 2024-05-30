@@ -1,6 +1,6 @@
-using System.Reflection;
 using System.Windows.Controls;
 using static FutureSimulator.Global;
+
 namespace FutureSimulator;
 
 public static class Util
@@ -14,11 +14,9 @@ public static class Util
 	{
 		return double.Parse(control.Text);
 	}
+
 	public static double TbToDouble(string control)
 	{
-		/*object a = new();
-		var value = window.GetType().GetRuntimeFields().First(a=>a.Name == control);
-		return 0.0;*/
 		return double.Parse(((TextBox)GetWindowVariable(control)).Text);
 	}
 
@@ -26,7 +24,7 @@ public static class Util
 	{
 		return int.Parse(control.Text);
 	}
-	
+
 	public static int TbToInt(string control)
 	{
 		return int.Parse(((TextBox)GetWindowVariable(control)).Text);
@@ -34,26 +32,26 @@ public static class Util
 
 	public static double Gauss(this Random random, double mean, double min, double max)
 	{
-		double u1 = 1.0-random.NextDouble(); //uniform(0,1] random doubles
-		double u2 = 1.0-random.NextDouble();
+		double u1 = 1.0 - random.NextDouble(); //uniform(0,1] random doubles
+		double u2 = 1.0 - random.NextDouble();
 		double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
 		                       Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
 		double randNormal =
 			mean + 14 * randStdNormal; //random normal(mean,stdDev^2)
 		double std = (randNormal - min) / (max - min);
-		return std*(max-min)+min;
+		return std * (max - min) + min;
 	}
-	
+
 	// public static int IntFromEnum<T>(string parameter) where T: Enum
 	// {
 	// 	T a = (T)Enum.Parse(typeof(T), parameter);
 	// 	return (int)a;
 	// }
 
-	public struct IntPoint 
+	public struct IntPoint
 	{
-		public int X {get;set;}
-		public int Y {get;set;}
+		public int X { get; set; }
+		public int Y { get; set; }
 	}
 
 	private static object GetWindowVariable(string variable)
