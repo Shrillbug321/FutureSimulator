@@ -17,7 +17,7 @@ public static class Util
 
 	public static double TbToDouble(string control)
 	{
-		return double.Parse(((TextBox)GetWindowVariable(control)).Text);
+		return double.Parse(GetWindowVariable<TextBox>(control).Text);
 	}
 
 	public static int TbToInt(TextBox control)
@@ -27,7 +27,7 @@ public static class Util
 
 	public static int TbToInt(string control)
 	{
-		return int.Parse(((TextBox)GetWindowVariable(control)).Text);
+		return int.Parse(GetWindowVariable<TextBox>(control).Text);
 	}
 
 	public static double Gauss(this Random random, double mean, double min, double max)
@@ -36,10 +36,7 @@ public static class Util
 		double u2 = 1.0 - random.NextDouble();
 		double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
 		                       Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-		double randNormal =
-			mean + 14 * randStdNormal; //random normal(mean,stdDev^2)
-		double std = (randNormal - min) / (max - min);
-		return std * (max - min) + min;
+		return mean + 14 * randStdNormal; //random normal(mean,stdDev^2)
 	}
 
 	// public static int IntFromEnum<T>(string parameter) where T: Enum
@@ -54,9 +51,9 @@ public static class Util
 		public int Y { get; set; }
 	}
 
-	private static object GetWindowVariable(string variable)
+	public static T GetWindowVariable<T>(string variable) where T:Control
 	{
-		return variable switch
+		object control = variable switch
 		{
 			"txt_m_rows" => window.txt_m_rows,
 			"txt_n_colls" => window.txt_n_colls,
@@ -67,6 +64,9 @@ public static class Util
 			"txtn_of_exper" => window.txtn_of_exper,
 			"init_capt" => window.init_capt,
 			"chb_debug" => window.chb_debug,
+			"chb_read_ca_states" => window.chb_read_ca_states,
+			"chb_read_a_profile" => window.chb_read_a_profile,
+			"chb_read_rand_num" => window.chb_read_rand_num,
 			"rb_test1" => window.rb_test1,
 			"rb_custom_seed" => window.rb_custom_seed,
 			"custom_seed" => window.custom_seed,
@@ -116,5 +116,6 @@ public static class Util
 			"chart" => window.chart,
 			_ => throw new ArgumentException($"Variable {variable} does not exist.")
 		};
+		return (T)control;
 	}
 }

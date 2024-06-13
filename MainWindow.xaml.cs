@@ -211,6 +211,7 @@ public partial class MainWindow
 		businesses = [];
 		diseases = [];
 		ResetChart();
+		Randomizer = new RandomWrapper();
 
 		if (chb_debug.IsChecked == true)
 		{
@@ -246,7 +247,7 @@ public partial class MainWindow
 	{
 		for (int i = 0; i < TbToInt(txtn_of_iter); i++)
 		{
-			await Task.Delay(20);
+			await Task.Delay(2);
 
 			CellArray newCAStates = new CellArray(columns, rows);
 			newCAStates = InitializeCAState(newCAStates);
@@ -332,7 +333,10 @@ public partial class MainWindow
 				
 				case Disease:
 					if (Randomizer.NextDouble() < agent.Disease)
+					{
 						agent.Capital -= agent.DecreaseInitialCapitalOnDisease * Agent.InitialCapital;
+						agent.SuspendedCounter = agent.IterationsOnBusiness;
+					}
 					break;
 				default: continue;
 			}
@@ -486,7 +490,6 @@ public partial class MainWindow
 		Business1.Availability = TbToDouble(txt_p_b1t5);
 		Business2.Availability = TbToDouble(txt_p_b1t5) + TbToDouble(txt_p_b2t5);
 		Business3.Availability = TbToDouble(txt_p_b1t5) + TbToDouble(txt_p_b2t5) + TbToDouble(txt_p_b3t5);
-		Randomizer = rb_custom_seed.IsChecked == true ? new Random(TbToInt(custom_seed)) : new Random();
 		Agent.InitialCapital = TbToDouble(init_capt);
 	}
 

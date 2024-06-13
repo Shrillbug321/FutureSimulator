@@ -89,8 +89,8 @@
                             <GroupBox Header="Read Options">
                                 <StackPanel Height="144">
                                     <CheckBox Name="chb_read_ca_states" Content="Read CA_STATES" IsChecked="True" />
-                                    <CheckBox Content="Read A_PROFILE" />
-                                    <CheckBox Content="Read RAND_NUM" />
+                                    <CheckBox Name="chb_read_a_profile" Content="Read A_PROFILE" />
+                                    <CheckBox Name="chb_read_rand_num" Content="Read RAND_NUM" />
                                     <StackPanel Margin="0,0,0,10">
                                         <RadioButton Name="rb_test1" Content="test 1" Margin="0,5,0,0" IsChecked="True" />
                                         <RadioButton Content="test 2" />

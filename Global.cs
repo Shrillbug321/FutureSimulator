@@ -3,5 +3,5 @@ public static class Global
 {
 	public static MainWindow window;
 	public static int seed;
-	public static Random Randomizer;
+	public static RandomWrapper Randomizer;
 }
