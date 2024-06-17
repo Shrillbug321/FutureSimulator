@@ -316,7 +316,14 @@ public partial class MainWindow
 
 	private async Task RunSimulation()
 	{
-		for (int i = 0; i < TbToInt(txtn_of_iter); i++)
+        string filePath = "result.txt";
+
+        string header = "#\t1\t2\t3\t4\t5\t6\t7\t8\t9\t10\t11\t12\t13\n";
+        header += "#\t\tpoorest\tpoorest\tpoorest\trichest\trichest\trichest\tpoorest\tfair\trichest\t%of\t%of\t%of\n";
+        header += "#\titer\tCAP\tA_id\tglob_ID\tCAP\tA_id\tglob_ID\tavCAP\tavCAP\tavCAP\tpoorest\tfair\treachest\n";
+        File.WriteAllText(filePath, header);
+
+        for (int i = 0; i < TbToInt(txtn_of_iter); i++)
 		{
 			await Task.Delay(2);
 			
@@ -331,7 +338,27 @@ public partial class MainWindow
 			AgentsInteractionWithEnvironment();
 			UpdateAgentsWealthState();
 			UpdateChart();
-		}
+
+            // Result.txt
+            string data = $"\t{i} ";
+            Agent poorestAgent = agents.OrderBy(a => a.Capital).First();
+            Agent richestAgent = agents.OrderByDescending(a => a.Capital).First();
+            int poorCount = agents.Where(a => a.IsPoor()).Count();
+            int fairCount = agents.Where(a => a.IsFair()).Count();
+            int richCount = agents.Where(a => a.IsRich()).Count();
+            double poorAvgCap = poorCount > 0 ? agents.Where(a => a.IsPoor()).Average(a => a.Capital) : 0;
+            double fairAvgCap = fairCount > 0 ? agents.Where(a => a.IsFair()).Average(a => a.Capital) : 0;
+            double richAvgCap = richCount > 0 ? agents.Where(a => a.IsRich()).Average(a => a.Capital) : 0;
+            double poorPercentage = poorCount / (double)agents.Count;
+            double fairPercentage = fairCount / (double)agents.Count;
+            double richPercentage = richCount / (double)agents.Count;
+            data += $"\t{poorestAgent.Capital:0.00}\t{poorestAgent.Id}\t{poorestAgent.GlobalId}\t" +
+                     $"{richestAgent.Capital:0.00}\t{richestAgent.Id}\t{richestAgent.GlobalId}\t" +
+                     $"{poorAvgCap:0.00}\t{fairAvgCap:0.00}\t{richAvgCap:0.00}\t" +
+                     $"{poorPercentage:0.00}\t{fairPercentage:0.00}\t{richPercentage:0.00}\n";
+
+            File.AppendAllText(filePath, data);
+        }
 	}
 
 	private void CreateActivitiesLists()
