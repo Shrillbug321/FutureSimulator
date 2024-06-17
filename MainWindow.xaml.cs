@@ -11,6 +11,7 @@ using FutureSimulator.Cells.Businesses;
 using LiveCharts;
 using LiveCharts.Wpf;
 using LiveCharts.Geared;
+using System.Diagnostics;
 
 namespace FutureSimulator;
 
@@ -122,7 +123,70 @@ public partial class MainWindow
 		}
 	}
 
-	private void DrawCaStatesCanvas(CellArray caStates)
+    private void ReadRandNum_Checked(object sender, RoutedEventArgs e)
+    {
+        CheckBox checkBox = sender as CheckBox;
+        if ((bool)checkBox.IsChecked)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Title = "Read Random Numbers"
+            };
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string selectedFilePath = openFileDialog.FileName;
+                string[] lines = File.ReadAllLines(selectedFilePath);
+
+                List<double> values = new List<double>();
+                foreach (string number in lines)
+                {
+                    if (double.TryParse(number, out double value))
+                    {
+                        values.Add(value);
+                    }
+                }
+                RandomWrapper.NumbersFromFile = new List<double>(values);
+            }
+        }
+    }
+
+    private void ReadAProfile_Checked(object sender, RoutedEventArgs e)
+    {
+        CheckBox checkBox = sender as CheckBox;
+        if ((bool)checkBox.IsChecked)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog
+            {
+                Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Title = "Read A Profiles"
+            };
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string selectedFilePath = openFileDialog.FileName;
+                string[] lines = File.ReadAllLines(selectedFilePath);
+
+				int agentIndex = 0;
+                for (int i = 2; i < lines.Length; i++)
+                {
+                    string[] values = lines[i].Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+					agents[agentIndex].Iq = int.Parse(values[2]);
+					agents[agentIndex].HealthState = (HealthState)int.Parse(values[3])-1;
+                    agents[agentIndex].BusinessesAccept = new Dictionary<string, double>
+					{
+						{ "Business1", double.Parse(values[4]) },
+						{ "Business2", double.Parse(values[5]) },
+						{ "Business3", double.Parse(values[6]) }
+					};
+					agents[agentIndex].Mobility = double.Parse(values[7]);
+                }
+            }
+        }
+    }
+
+    private void DrawCaStatesCanvas(CellArray caStates)
 	{
 		cells_canvas.Children.Clear();
 		for (int i = 0; i < columns; i++)
@@ -217,8 +281,10 @@ public partial class MainWindow
 		{
 			if (rb_test1.IsChecked == true)
 			{
-				ReadCAStates_Checked(chb_read_ca_states, null);
-			}
+                ReadRandNum_Checked(chb_read_rand_num, null);
+                ReadCAStates_Checked(chb_read_ca_states, null);
+				ReadAProfile_Checked(chb_read_a_profile, null);
+            }
 		}
 		else
 		{
