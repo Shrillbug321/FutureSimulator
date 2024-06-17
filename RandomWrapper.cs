@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Windows.Controls;
 using static FutureSimulator.Util;
 
@@ -26,8 +25,7 @@ public class RandomWrapper : Random
 
         if (index >= NumbersFromFile.Count)
             index = 0;
-        double value = NumbersFromFile[index];
-		index++;
+        double value = NumbersFromFile[index++];
 
         for (int i = 0; i < maxValue; i++)
 		{
@@ -42,11 +40,10 @@ public class RandomWrapper : Random
 	{
         if (!fromFile || NumbersFromFile.Count == 0)
             return random.NextDouble();
+        
         if (index >= NumbersFromFile.Count)
             index = 0;
-        double value = NumbersFromFile[index];
-		index++;
 
-        return value;
+        return NumbersFromFile[index++];
     }
 }

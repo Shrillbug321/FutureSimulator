@@ -4,32 +4,32 @@ public partial class MainWindow
 {
 	private record AgentActivity
 	{
-		private int agentID;
-		private int agentGlobalID;
-		private bool positionChanged;
-		private double currentCapital;
-		private bool capitalIncreased;
-		private ChangeReason increaseReason;
-		private bool capitalDecreased;
-		private ChangeReason decreaseReason;
-		private bool capitalNotChange;
-		private bool diseaseSuspendBusiness;
-		private int emergencyHops;
+		public int agentID;
+		public int agentGlobalID;
+		public bool positionChanged;
+		public double currentCapital;
+		public bool capitalIncreased;
+		public ChangeReason increaseReason;
+		public bool capitalDecreased;
+		public ChangeReason decreaseReason;
+		public bool capitalNotChange;
+		public int diseaseSuspendBusiness;
+		public int emergencyHops;
 	}
 
 	private record BusinessActivity
 	{
-		private int businessID;
-		private int businessGlobalID;
-		private int type;
-		private int emergencyHops;
+		public int businessID;
+		public int businessGlobalID;
+		public int type;
+		public int emergencyHops;
 	}
 
 	private record DiseaseActivity
 	{
-		private int diseaseID;
-		private int diseaseGlobalID;
-		private int emergencyHops;
+		public int diseaseID;
+		public int diseaseGlobalID;
+		public int emergencyHops;
 	}
 
 	public enum CAState

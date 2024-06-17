@@ -29,6 +29,7 @@ public partial class MainWindow
 	private double cellWidth;
 	private double cellHeight;
 	private int cellsNumber;
+	private int iteration;
 	private CellArray caStates;
 	private SeriesCollection chartSeries;
 
@@ -236,7 +237,7 @@ public partial class MainWindow
 
 	private void CreateCaElementFromState(CAState state, int point1d, int id)
 	{
-		Cell cell = new Cell
+		Cell cell = new()
 		{
 			Id = id, GlobalId = point1d
 		};
@@ -275,6 +276,9 @@ public partial class MainWindow
 		agents = [];
 		businesses = [];
 		diseases = [];
+		agentsActivities = [];
+		businessesActivities = [];
+		diseasesActivities = [];
 		ResetChart();
 		Randomizer = new RandomWrapper();
 
@@ -315,8 +319,10 @@ public partial class MainWindow
 		for (int i = 0; i < TbToInt(txtn_of_iter); i++)
 		{
 			await Task.Delay(2);
-
-			CellArray newCAStates = new CellArray(columns, rows);
+			
+			iteration = i;
+			CellArray newCAStates = new(columns, rows);
+			CreateActivitiesLists();
 			newCAStates = InitializeCAState(newCAStates);
 			MoveCells(newCAStates);
 			caStates = newCAStates;
@@ -328,6 +334,13 @@ public partial class MainWindow
 		}
 	}
 
+	private void CreateActivitiesLists()
+	{
+		agentsActivities.Add(iteration, []);
+		businessesActivities.Add(iteration, []);
+		diseasesActivities.Add(iteration, []);
+	}
+	
 	private void MoveCells(CellArray newCAStates)
 	{
 		List<int> newOccupied = [];
@@ -336,12 +349,14 @@ public partial class MainWindow
 			List<int> neighbours = GetCellNeighbourhoodPoints(cell.GlobalId);
 			int newPoint = -1;
 			bool moved = false;
+			bool agentMoved = false;
 
 			if (cell is Agent a)
 			{
 				if (Randomizer.NextDouble() > a.Mobility)
 				{
 					moved = true;
+					agentMoved = true;
 					newPoint = a.GlobalId;
 				}
 			}
@@ -369,16 +384,67 @@ public partial class MainWindow
 			cell.GlobalId = newPoint;
 			newOccupied.Add(newPoint);
 			newCAStates[newPoint] = cell;
+
+			AddActivity(cell, agentMoved);
 		}
 	}
 
+	private void AddActivity(Cell cell, bool agentMoved)
+	{
+		switch (cell)
+		{
+			case Agent agent:
+				agentsActivities[iteration].Add(new AgentActivity
+				{
+					agentID = agent.Id,
+					agentGlobalID = agent.GlobalId,
+					positionChanged = agentMoved,
+					currentCapital = agent.Capital,
+					capitalIncreased = false,
+					increaseReason = ChangeReason.NoChange,
+					capitalDecreased = false,
+					decreaseReason = ChangeReason.NoChange,
+					capitalNotChange = true,
+					diseaseSuspendBusiness = 0,
+					emergencyHops = agent.EmergencyHops,
+				});
+				break;
+			case Business business:
+				businessesActivities[iteration].Add(new BusinessActivity
+				{
+					businessID = business.Id,
+					businessGlobalID = business.GlobalId,
+					type = business switch
+					{
+						Business1 => 1,
+						Business2 => 2,
+						_ => 3
+					},
+					emergencyHops = business.EmergencyHops,
+				});
+				break;
+			case Disease disease:
+				diseasesActivities[iteration].Add(new DiseaseActivity
+				{
+					diseaseID = disease.Id,
+					diseaseGlobalID = disease.GlobalId,
+					emergencyHops = disease.EmergencyHops,
+				});
+				break;
+		}
+	}
+	
 	private void AgentsInteractionWithEnvironment()
 	{
 		foreach (Agent agent in agents)
 		{
+			AgentActivity activity = agentsActivities[iteration].First(a=>a.agentID == agent.Id);
 			if (agent.SuspendedCounter > 0)
 			{
+				AgentActivity prev = agentsActivities[iteration-1].First(a=>a.agentID == agent.Id);
 				agent.SuspendedCounter--;
+				activity = prev;
+				activity.diseaseSuspendBusiness = agent.SuspendedCounter;
 				continue;
 			}
 
@@ -393,7 +459,21 @@ public partial class MainWindow
 						{
 							agent.SuspendedCounter = agent.IterationsOnBusiness;
 							if (Randomizer.NextDouble() >= b.FailureRisc)
+							{
 								agent.Capital += b.IncreaseCapital * b.InvestedCapital;
+								
+								activity.capitalIncreased = true;
+								activity.increaseReason = FindChangeReason(b);
+								activity.capitalDecreased = false;
+								activity.capitalNotChange = false;
+							}
+							else
+							{
+								activity.capitalIncreased = false;
+								activity.capitalDecreased = true;
+								activity.decreaseReason = FindChangeReason(b);
+								activity.capitalNotChange = false;
+							}
 						}
 					}
 					break;
@@ -403,19 +483,38 @@ public partial class MainWindow
 					{
 						agent.Capital -= agent.DecreaseInitialCapitalOnDisease * Agent.InitialCapital;
 						agent.SuspendedCounter = agent.IterationsOnBusiness;
+						
+						activity.capitalIncreased = false;
+						activity.capitalDecreased = true;
+						activity.decreaseReason = ChangeReason.Disease;
+						activity.capitalNotChange = false;
 					}
 					break;
 				default: continue;
 			}
+			activity.currentCapital = agent.Capital;
+			activity.diseaseSuspendBusiness = agent.SuspendedCounter;
 		}
 	}
 
+	private ChangeReason FindChangeReason(Cell cell)
+	{
+		return cell switch
+		{
+			Business1 => ChangeReason.AfterBusiness1,
+			Business2 => ChangeReason.AfterBusiness2,
+			Business3 => ChangeReason.AfterBusiness3,
+			Disease => ChangeReason.Disease,
+			_ => ChangeReason.NoChange
+		};
+	}
+	
 	private void UpdateAgentsWealthState()
 	{
 		foreach (Agent agent in agents)
 			agent.UpdateWealthState();
 	}
-
+	
 	private List<int> GetCellNeighbourhoodPoints(int point)
 	{
 		return DetectCellPosition(point) switch
@@ -440,7 +539,7 @@ public partial class MainWindow
 
 	private List<Cell> GetCellNeighbourhood(int point, CellArray? cells = null)
 	{
-		cells = cells ?? caStates;
+		cells ??= caStates;
 		List<int> points = GetCellNeighbourhoodPoints(point);
 		return cells[points];
 	}
