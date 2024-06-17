@@ -181,6 +181,7 @@ public partial class MainWindow
 						{ "Business3", double.Parse(values[6]) }
 					};
 					agents[agentIndex].Mobility = double.Parse(values[7]);
+					agents[agentIndex].UpdateThresholds();
                 }
             }
         }
@@ -242,7 +243,7 @@ public partial class MainWindow
 		switch (state)
 		{
 			case CAState.Agent:
-				Agent agent = new Agent(cell);
+				Agent agent = new Agent(cell, (bool)chb_read_a_profile.IsChecked);
 				caStates[point1d] = agent;
 				agents.Add(agent);
 				break;

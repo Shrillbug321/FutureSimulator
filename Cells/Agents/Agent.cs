@@ -15,37 +15,47 @@ public class Agent : AgentAbstract
 	public int SuspendedCounter = 0;
 	public Dictionary<string, double> BusinessesAccept;
 
-	public Agent()
+	public Agent(bool fromFile)
 	{
-		Iq = (int)Randomizer.Gauss(IqMean, IqRangeMin, IqRangeMax);
-
-		dynamic rand = Randomizer.Next();
-		IqState = rand <= IqStateThresholds[IqState.Stupid] ? IqState.Stupid :
-			rand <= IqStateThresholds[IqState.Standard] ? IqState.Standard : IqState.Clever;
-
-		rand = Randomizer.NextDouble();
-		HealthState = rand <= HealthStateThresholds[HealthState.Weak] ? HealthState.Weak :
-			rand <= HealthStateThresholds[HealthState.Standard] ? HealthState.Standard : HealthState.Good;
-
-		Disease = DiseaseThresholds[HealthState];
-		Mobility = MobilityThresholds[IqState];
-		Capital = InitialCapital;
-		
-		BusinessesAccept = new Dictionary<string, double>
+		if (!fromFile)
 		{
-			{ "Business1", BusinessesAccepts[0][IqState] },
-			{ "Business2", BusinessesAccepts[1][IqState] },
-			{ "Business3", BusinessesAccepts[2][IqState] }
-		};
+            Iq = (int)Randomizer.Gauss(IqMean, IqRangeMin, IqRangeMax);
+
+            dynamic rand = Randomizer.Next();
+            IqState = rand <= IqStateThresholds[IqState.Stupid] ? IqState.Stupid :
+                rand <= IqStateThresholds[IqState.Standard] ? IqState.Standard : IqState.Clever;
+
+            rand = Randomizer.NextDouble();
+            HealthState = rand <= HealthStateThresholds[HealthState.Weak] ? HealthState.Weak :
+                rand <= HealthStateThresholds[HealthState.Standard] ? HealthState.Standard : HealthState.Good;
+
+            Disease = DiseaseThresholds[HealthState];
+            Mobility = MobilityThresholds[IqState];
+            Capital = InitialCapital;
+
+            BusinessesAccept = new Dictionary<string, double>
+			{
+				{ "Business1", BusinessesAccepts[0][IqState] },
+				{ "Business2", BusinessesAccepts[1][IqState] },
+				{ "Business3", BusinessesAccepts[2][IqState] }
+			};
+        }
 	}
 
-	public Agent(Cell element) : this()
+	public Agent(Cell element, bool fromFile) : this(fromFile)
 	{
 		Id = element.Id;
 		GlobalId = element.GlobalId;
-	}
+    }
 
-	public void UpdateWealthState()
+    public void UpdateThresholds()
+    {
+        Disease = DiseaseThresholds[HealthState];
+        Mobility = MobilityThresholds[IqState];
+        Capital = InitialCapital;
+    }
+
+    public void UpdateWealthState()
 	{
 		double thresholdPoor = WealthThresholds[WealthState.Poor] * InitialCapital;
 		double thresholdFair = WealthThresholds[WealthState.Fair] * InitialCapital;

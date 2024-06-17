@@ -35,8 +35,7 @@ public class RandomWrapper : Random
                 return i;
 		}
 
-		// ArrayOutOfBoundy exception in here when this is return when using RandNum file
-		return maxValue;
+		return maxValue - 1;
 	}
 	
 	public new double NextDouble()
