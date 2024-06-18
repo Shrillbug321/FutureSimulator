@@ -378,6 +378,10 @@
 
             </StackPanel>
             <StackPanel Grid.Column="1" Margin="20">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+                    <TextBlock Text="Simulation speed [ms]" Margin="0,0,0,0" Width="120" />
+                    <TextBox x:Name="txt_simulation_speed" Margin="0,0,0,0" Width="50" Text="20"/>
+                </StackPanel>
                 <Canvas Name="cells_canvas" Width="350" Height="350">
 
                 </Canvas>

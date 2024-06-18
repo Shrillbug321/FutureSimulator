@@ -320,12 +320,12 @@ public partial class MainWindow
 
         string header = "#\t1\t2\t3\t4\t5\t6\t7\t8\t9\t10\t11\t12\t13\n";
         header += "#\t\tpoorest\tpoorest\tpoorest\trichest\trichest\trichest\tpoorest\tfair\trichest\t%of\t%of\t%of\n";
-        header += "#\titer\tCAP\tA_id\tglob_ID\tCAP\tA_id\tglob_ID\tavCAP\tavCAP\tavCAP\tpoorest\tfair\treachest\n";
+        header += "#\titer\tCAP\tA_id\tglob_ID\tCAP\tA_id\tglob_ID\tavCAP\tavCAP\tavCAP\tpoorest\tfair\trichest\n";
         File.WriteAllText(filePath, header);
 
         for (int i = 0; i < TbToInt(txtn_of_iter); i++)
         {
-            await Task.Delay(2);
+            await Task.Delay(TbToInt(txt_simulation_speed));
 
             iteration = i;
             CellArray newCAStates = new(columns, rows);
@@ -340,24 +340,8 @@ public partial class MainWindow
             UpdateChart();
 
             // Result.txt
-            string data = $"\t{i} ";
-            Agent poorestAgent = agents.OrderBy(a => a.Capital).First();
-            Agent richestAgent = agents.OrderByDescending(a => a.Capital).First();
-            int poorCount = agents.Where(a => a.IsPoor()).Count();
-            int fairCount = agents.Where(a => a.IsFair()).Count();
-            int richCount = agents.Where(a => a.IsRich()).Count();
-            double poorAvgCap = poorCount > 0 ? agents.Where(a => a.IsPoor()).Average(a => a.Capital) : 0;
-            double fairAvgCap = fairCount > 0 ? agents.Where(a => a.IsFair()).Average(a => a.Capital) : 0;
-            double richAvgCap = richCount > 0 ? agents.Where(a => a.IsRich()).Average(a => a.Capital) : 0;
-            double poorPercentage = poorCount / (double)agents.Count;
-            double fairPercentage = fairCount / (double)agents.Count;
-            double richPercentage = richCount / (double)agents.Count;
-            data += $"\t{poorestAgent.Capital:0.00}\t{poorestAgent.Id}\t{poorestAgent.GlobalId}\t" +
-                     $"{richestAgent.Capital:0.00}\t{richestAgent.Id}\t{richestAgent.GlobalId}\t" +
-                     $"{poorAvgCap:0.00}\t{fairAvgCap:0.00}\t{richAvgCap:0.00}\t" +
-                     $"{poorPercentage:0.00}\t{fairPercentage:0.00}\t{richPercentage:0.00}\n";
-
-            File.AppendAllText(filePath, data);
+            SaveResults(filePath);
+            SaveActivities();
         }
     }
 
@@ -523,7 +507,83 @@ public partial class MainWindow
 			activity.diseaseSuspendBusiness = agent.SuspendedCounter;
 		}
 	}
+	
+	private void UpdateAgentsWealthState()
+	{
+		foreach (Agent agent in agents)
+			agent.UpdateWealthState();
+	}
 
+	private void SaveResults(string filePath)
+	{
+		string data = $"\t{iteration} ";
+		Agent poorestAgent = agents.OrderBy(a => a.Capital).First();
+		Agent richestAgent = agents.OrderByDescending(a => a.Capital).First();
+		int poorCount = agents.Count(a => a.IsPoor());
+		int fairCount = agents.Count(a => a.IsFair());
+		int richCount = agents.Count(a => a.IsRich());
+		double poorAvgCap = poorCount > 0 ? agents.Where(a => a.IsPoor()).Average(a => a.Capital) : 0;
+		double fairAvgCap = fairCount > 0 ? agents.Where(a => a.IsFair()).Average(a => a.Capital) : 0;
+		double richAvgCap = richCount > 0 ? agents.Where(a => a.IsRich()).Average(a => a.Capital) : 0;
+		double poorPercentage = poorCount / (double)agents.Count;
+		double fairPercentage = fairCount / (double)agents.Count;
+		double richPercentage = richCount / (double)agents.Count;
+		data += $"\t{poorestAgent.Capital:0.00}\t{poorestAgent.Id}\t{poorestAgent.GlobalId}\t" +
+		        $"{richestAgent.Capital:0.00}\t{richestAgent.Id}\t{richestAgent.GlobalId}\t" +
+		        $"{poorAvgCap:0.00}\t{fairAvgCap:0.00}\t{richAvgCap:0.00}\t" +
+		        $"{poorPercentage:0.00}\t{fairPercentage:0.00}\t{richPercentage:0.00}\n";
+
+		File.AppendAllText(filePath, data);
+	}
+
+	private void SaveActivities()
+	{
+		string agentsPath = "agentsActivity.txt";
+		string businessesPath = "businessesActivity.txt";
+		string diseasesPath = "diseasesActivity.txt";
+
+		if (iteration == 0)
+		{
+			string header = """
+			                #1	2		3	4	5		6	7		8	9		10	11
+			                #	current		position	curr	CAP		increase	CAP		decrease	CAP		D_susp	cr_A_of
+			                #A_id	A_glob_id	changed	CAP	increased	reason	decreased	reason	not_change	business	emerg_hops
+			                """;
+			
+			File.WriteAllText(agentsPath, header);
+			
+			header = """
+	                #1	2		3	4
+	                #	current			cr_B_of
+	                #B_id	B_glob_id	B_type	emergency_hops
+	                """;
+			File.WriteAllText(businessesPath, header);
+			
+			header = """
+			         #1	2		3
+			         #	current		cr_D_of
+			         #D_id	D_glob_id	emergency_hops
+			         """;
+			File.WriteAllText(diseasesPath, header);
+		}
+
+		string iterationInfo = $"\n	Iteration {iteration+1}\n";
+		string agentData="", businessData="", diseaseData = "";
+		
+		foreach (AgentActivity activity in agentsActivities[iteration])
+			agentData += $"{activity}\n";
+		
+		foreach (BusinessActivity activity in businessesActivities[iteration])
+			businessData += $"{activity}\n";
+		
+		foreach (DiseaseActivity activity in diseasesActivities[iteration])
+			diseaseData += $"{activity}\n";
+		
+		File.AppendAllText(agentsPath, iterationInfo+agentData);
+        File.AppendAllText(businessesPath, iterationInfo+businessData);
+        File.AppendAllText(diseasesPath, iterationInfo+diseaseData);
+	}
+	
 	private ChangeReason FindChangeReason(Cell cell)
 	{
 		return cell switch
@@ -535,13 +595,6 @@ public partial class MainWindow
 			_ => ChangeReason.NoChange
 		};
 	}
-	
-	private void UpdateAgentsWealthState()
-	{
-		foreach (Agent agent in agents)
-			agent.UpdateWealthState();
-	}
-	
 	private List<int> GetCellNeighbourhoodPoints(int point)
 	{
 		return DetectCellPosition(point) switch
