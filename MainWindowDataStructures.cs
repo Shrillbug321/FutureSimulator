@@ -18,7 +18,7 @@ public partial class MainWindow
 
 		public override string ToString()
 		{
-			return $" {agentID}	{agentGlobalID}		{(positionChanged?1:0)}	" +
+			return $" {agentID+1}	{agentGlobalID+1}		{(positionChanged?1:0)}	" +
 			       $"{currentCapital:0.00}	{(capitalIncreased ? 1 : 0)}		" +
 			       $"{ChangeReasonToNumber(increaseReason)}	{(capitalDecreased?1:0)}		" +
 			       $"{ChangeReasonToNumber(decreaseReason)}	{(capitalNotChange?1:0)}		" +
@@ -35,7 +35,7 @@ public partial class MainWindow
 
 		public override string ToString()
 		{
-			return $" {businessID}	{businessGlobalID}		{type}	{emergencyHops}";
+			return $" {businessID+1}	{businessGlobalID+1}		{type}	{emergencyHops}";
 		}
 	}
 
@@ -47,7 +47,7 @@ public partial class MainWindow
 
 		public override string ToString()
 		{
-			return $" {diseaseID}	{diseaseGlobalID}		{emergencyHops}";
+			return $" {diseaseID+1}	{diseaseGlobalID+1}		{emergencyHops}";
 		}
 	}
 

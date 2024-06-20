@@ -140,7 +140,7 @@ public partial class MainWindow
                 string selectedFilePath = openFileDialog.FileName;
                 string[] lines = File.ReadAllLines(selectedFilePath);
 
-                List<double> values = new List<double>();
+                List<double> values = [];
                 foreach (string number in lines)
                 {
                     if (double.TryParse(number, out double value))
@@ -148,7 +148,7 @@ public partial class MainWindow
                         values.Add(value);
                     }
                 }
-                RandomWrapper.NumbersFromFile = new List<double>(values);
+                RandomWrapper.NumbersFromFile = [..values];
             }
         }
     }
@@ -244,7 +244,7 @@ public partial class MainWindow
 		switch (state)
 		{
 			case CAState.Agent:
-				Agent agent = new Agent(cell, (bool)chb_read_a_profile.IsChecked);
+				Agent agent = new(cell, (bool)chb_read_a_profile.IsChecked);
 				caStates[point1d] = agent;
 				agents.Add(agent);
 				break;
@@ -256,7 +256,7 @@ public partial class MainWindow
 				caStates[point1d] = business;
 				break;
 			case CAState.Disease:
-				Disease disease = new Disease(cell);
+				Disease disease = new(cell);
 				caStates[point1d] = disease;
 				diseases.Add(disease);
 				break;
@@ -516,7 +516,7 @@ public partial class MainWindow
 
 	private void SaveResults(string filePath)
 	{
-		string data = $"\t{iteration} ";
+		string data = $"\t{iteration+1} ";
 		Agent poorestAgent = agents.OrderBy(a => a.Capital).First();
 		Agent richestAgent = agents.OrderByDescending(a => a.Capital).First();
 		int poorCount = agents.Count(a => a.IsPoor());
@@ -528,8 +528,8 @@ public partial class MainWindow
 		double poorPercentage = poorCount / (double)agents.Count;
 		double fairPercentage = fairCount / (double)agents.Count;
 		double richPercentage = richCount / (double)agents.Count;
-		data += $"\t{poorestAgent.Capital:0.00}\t{poorestAgent.Id}\t{poorestAgent.GlobalId}\t" +
-		        $"{richestAgent.Capital:0.00}\t{richestAgent.Id}\t{richestAgent.GlobalId}\t" +
+		data += $"\t{poorestAgent.Capital:0.00}\t{poorestAgent.Id+1}\t{poorestAgent.GlobalId+1}\t" +
+		        $"{richestAgent.Capital:0.00}\t{richestAgent.Id+1}\t{richestAgent.GlobalId+1}\t" +
 		        $"{poorAvgCap:0.00}\t{fairAvgCap:0.00}\t{richAvgCap:0.00}\t" +
 		        $"{poorPercentage:0.00}\t{fairPercentage:0.00}\t{richPercentage:0.00}\n";
 
